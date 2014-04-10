@@ -1,0 +1,4 @@
+rabbitmq-examples
+=================
+
+RabbitMQ examples
