@@ -10,7 +10,7 @@ import java.io.IOException;
 public class Receiver {
     private final ChannelFactory channelFactory = new ChannelFactoryImpl();
 
-    public void runReceiver() throws IOException, InterruptedException {
+    public void runReceiver() throws IOException {
         final Channel channel = channelFactory.getChannel(Configuration.HOSTNAME);
         channel.queueDeclare(Configuration.QUEUE_NAME, false, false, false, null);
         System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
@@ -18,14 +18,18 @@ public class Receiver {
         final QueueingConsumer consumer = new QueueingConsumer(channel);
         channel.basicConsume(Configuration.QUEUE_NAME, true, consumer);
 
-        while (true) {
-            QueueingConsumer.Delivery delivery = consumer.nextDelivery();
-            final String message = new String(delivery.getBody());
-            System.out.println(" [x] Received '" + message + "'");
+        try {
+            while (true) {
+                QueueingConsumer.Delivery delivery = consumer.nextDelivery();
+                final String message = new String(delivery.getBody());
+                System.out.println(" [x] Received '" + message + "'");
+            }
+        } catch (Exception e) {
+            ((ChannelFactoryImpl) channelFactory).destroy();
         }
     }
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws IOException {
         final Receiver receiver = new Receiver();
         receiver.runReceiver();
     }
