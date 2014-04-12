@@ -1,8 +1,6 @@
 package info.dyndns.pfitz.rabbitmq;
 
 import com.rabbitmq.client.Channel;
-import info.dyndns.pfitz.rabbitmq.factory.ChannelFactory;
-import info.dyndns.pfitz.rabbitmq.factory.ChannelFactoryImpl;
 import org.joda.time.DateTime;
 
 import java.io.IOException;
@@ -10,7 +8,7 @@ import java.io.IOException;
 public class Sender {
     private final ChannelFactory channelFactory = new ChannelFactoryImpl();
 
-    public void runSender() throws IOException {
+    public void run() throws IOException {
         final Channel channel = channelFactory.getChannel(Configuration.HOSTNAME);
 
         channel.queueDeclare(Configuration.QUEUE_NAME, false, false, false, null);
@@ -24,6 +22,6 @@ public class Sender {
 
     public static void main(String[] args) throws IOException {
         final Sender sender = new Sender();
-        sender.runSender();
+        sender.run();
     }
 }

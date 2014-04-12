@@ -1,4 +1,4 @@
-package info.dyndns.pfitz.rabbitmq.factory;
+package info.dyndns.pfitz.rabbitmq;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;

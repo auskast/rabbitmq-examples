@@ -10,12 +10,17 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>hello-world</artifactId>
+    <artifactId>work-queue</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>rabbitmq-examples</groupId>
             <artifactId>rabbitmq-common</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
         </dependency>
 
         <dependency>
