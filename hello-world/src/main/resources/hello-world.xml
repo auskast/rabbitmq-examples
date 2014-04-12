@@ -11,7 +11,7 @@
 
     <context:property-placeholder location="hello-world.properties"/>
 
-    <bean id="receiver" class="info.dyndns.pfitz.rabbitmq.Receiver"/>
-    <bean id="sender" class="info.dyndns.pfitz.rabbitmq.Sender"/>
+    <bean id="receiver" class="info.dyndns.pfitz.rabbitmq.hello.Receiver"/>
+    <bean id="sender" class="info.dyndns.pfitz.rabbitmq.hello.Sender"/>
 
 </beans>

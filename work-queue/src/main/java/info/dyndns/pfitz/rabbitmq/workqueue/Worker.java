@@ -1,17 +1,19 @@
-package info.dyndns.pfitz.rabbitmq;
+package info.dyndns.pfitz.rabbitmq.workqueue;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.QueueingConsumer;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import javax.annotation.Resource;
 import java.io.IOException;
 
-public class Worker {
+public class Worker implements InitializingBean, DisposableBean {
     @Resource
     private Channel channel;
     @Value("${queue.name}")
@@ -23,11 +25,19 @@ public class Worker {
         this.prefetchCount = prefetchCount;
     }
 
-    public void run() throws IOException {
+    @Override
+    public void afterPropertiesSet() throws Exception {
         channel.queueDeclare(queueName, true, false, false, null);
-        System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
-
         channel.basicQos(prefetchCount);
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        channel.close();
+    }
+
+    public void run() throws IOException {
+        System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
 
         final QueueingConsumer consumer = new QueueingConsumer(channel);
         channel.basicConsume(queueName, false, consumer);
@@ -42,7 +52,7 @@ public class Worker {
                 channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
             }
         } catch (InterruptedException e) {
-            System.out.println("Exiting...");
+            System.out.println("Interrupted...");
         }
     }
 
@@ -51,8 +61,10 @@ public class Worker {
     }
 
     public static void main(String[] args) throws IOException {
-        final ApplicationContext context = new ClassPathXmlApplicationContext("work-queue.xml");
+        final AbstractApplicationContext context = new ClassPathXmlApplicationContext("work-queue.xml");
+        context.registerShutdownHook();
         final Worker worker = (Worker) context.getBean("worker");
         worker.run();
+        System.exit(0);
     }
 }
