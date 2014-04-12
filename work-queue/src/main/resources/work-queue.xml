@@ -9,8 +9,8 @@
 
     <context:property-placeholder location="work-queue.properties"/>
 
-    <bean id="task" class="info.dyndns.pfitz.rabbitmq.workqueue.Task"/>
-    <bean id="worker" class="info.dyndns.pfitz.rabbitmq.workqueue.Worker">
+    <bean id="task" class="info.dyndns.pfitz.rabbitmq.workqueue.Task" lazy-init="true"/>
+    <bean id="worker" class="info.dyndns.pfitz.rabbitmq.workqueue.Worker" lazy-init="true">
         <property name="prefetchCount" value="2"/>
     </bean>
 

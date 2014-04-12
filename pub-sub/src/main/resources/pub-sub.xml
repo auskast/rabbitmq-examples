@@ -9,7 +9,7 @@
 
     <context:property-placeholder location="pub-sub.properties"/>
 
-    <bean id="logEmitter" class="info.dyndns.pfitz.rabbitmq.pubsub.LogEmitter"/>
-    <bean id="consoleLogger" class="info.dyndns.pfitz.rabbitmq.pubsub.ConsoleLogger"/>
+    <bean id="logEmitter" class="info.dyndns.pfitz.rabbitmq.pubsub.LogEmitter" lazy-init="true"/>
+    <bean id="consoleLogger" class="info.dyndns.pfitz.rabbitmq.pubsub.ConsoleLogger" lazy-init="true"/>
 
 </beans>
