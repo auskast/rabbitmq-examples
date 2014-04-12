@@ -40,7 +40,7 @@ public class Receiver implements InitializingBean, DisposableBean {
                 System.out.println(" [x] Received '" + message + "'");
             }
         } catch (InterruptedException e){
-            System.out.println("Interrupted...");
+            System.err.println("Interrupted...");
         }
     }
 

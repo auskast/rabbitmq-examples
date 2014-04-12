@@ -13,6 +13,7 @@
         <module>hello-world</module>
         <module>work-queue</module>
         <module>rabbitmq-common</module>
+        <module>pub-sub</module>
     </modules>
 
     <properties>

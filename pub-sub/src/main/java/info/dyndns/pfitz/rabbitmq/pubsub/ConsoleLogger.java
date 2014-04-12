@@ -1,9 +1,7 @@
-package info.dyndns.pfitz.rabbitmq.workqueue;
+package info.dyndns.pfitz.rabbitmq.pubsub;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.QueueingConsumer;
-import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,22 +11,19 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import javax.annotation.Resource;
 import java.io.IOException;
 
-public class Worker implements InitializingBean, DisposableBean {
+public class ConsoleLogger implements InitializingBean, DisposableBean {
     @Resource
     private Channel channel;
-    @Value("${queue.name}")
+    @Value("${exchange.name}")
+    private String exchangeName;
+
     private String queueName;
-
-    private Integer prefetchCount = 1;
-
-    public void setPrefetchCount(Integer prefetchCount) {
-        this.prefetchCount = prefetchCount;
-    }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        channel.queueDeclare(queueName, true, false, false, null);
-        channel.basicQos(prefetchCount);
+        channel.exchangeDeclare(exchangeName, "fanout");
+        queueName = channel.queueDeclare().getQueue();
+        channel.queueBind(queueName, exchangeName, "");
     }
 
     @Override
@@ -40,31 +35,24 @@ public class Worker implements InitializingBean, DisposableBean {
         System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
 
         final QueueingConsumer consumer = new QueueingConsumer(channel);
-        channel.basicConsume(queueName, false, consumer);
+        channel.basicConsume(queueName, true, consumer);
 
         try {
             while (true) {
                 final QueueingConsumer.Delivery delivery = consumer.nextDelivery();
                 final String message = new String(delivery.getBody());
-                System.out.println(" [x] " + DateTime.now().toString() + " Received '" + message + "'");
-                doWork(message);
-                System.out.println(" [x] " + DateTime.now().toString() + " Done");
-                channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+                System.out.println(" [x] Received '" + message + "'");
             }
         } catch (InterruptedException e) {
             System.err.println("Interrupted...");
         }
     }
 
-    private void doWork(String message) throws InterruptedException {
-        Thread.sleep(50 * StringUtils.countMatches(message, "."));
-    }
-
     public static void main(String[] args) throws IOException {
-        final AbstractApplicationContext context = new ClassPathXmlApplicationContext("work-queue.xml");
+        final AbstractApplicationContext context = new ClassPathXmlApplicationContext("pub-sub.xml");
         context.registerShutdownHook();
-        final Worker worker = (Worker) context.getBean("worker");
-        worker.run();
+        final ConsoleLogger consoleLogger = (ConsoleLogger) context.getBean("consoleLogger");
+        consoleLogger.run();
         System.exit(0);
     }
 }
