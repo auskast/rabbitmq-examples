@@ -11,7 +11,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import javax.annotation.Resource;
 import java.io.IOException;
 
-public class ConsoleLogger implements InitializingBean, DisposableBean {
+public class ConsoleLogger implements InitializingBean, DisposableBean, Runnable {
     @Resource
     private Channel channel;
     @Value("${exchange.name}")
@@ -31,13 +31,15 @@ public class ConsoleLogger implements InitializingBean, DisposableBean {
         channel.close();
     }
 
-    public void run() throws IOException {
+    @Override
+    public void run() {
         System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
 
         final QueueingConsumer consumer = new QueueingConsumer(channel);
-        channel.basicConsume(queueName, true, consumer);
 
         try {
+            channel.basicConsume(queueName, true, consumer);
+
             while (true) {
                 final QueueingConsumer.Delivery delivery = consumer.nextDelivery();
                 final String message = new String(delivery.getBody());
@@ -45,6 +47,8 @@ public class ConsoleLogger implements InitializingBean, DisposableBean {
             }
         } catch (InterruptedException e) {
             System.err.println("Interrupted...");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -52,7 +56,14 @@ public class ConsoleLogger implements InitializingBean, DisposableBean {
         final AbstractApplicationContext context = new ClassPathXmlApplicationContext("pub-sub.xml");
         context.registerShutdownHook();
         final ConsoleLogger consoleLogger = (ConsoleLogger) context.getBean("consoleLogger");
-        consoleLogger.run();
+
+        final Thread thread = new Thread(consoleLogger);
+        thread.start();
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            System.err.println("Interrupted...");
+        }
         System.exit(0);
     }
 }
