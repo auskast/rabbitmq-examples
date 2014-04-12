@@ -2,26 +2,32 @@ package info.dyndns.pfitz.rabbitmq;
 
 import com.rabbitmq.client.Channel;
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 
 public class Sender {
-    private final ChannelFactory channelFactory = new ChannelFactoryImpl();
+    @Resource
+    private Channel channel;
+    @Value("${queue.name}")
+    private String queueName;
 
     public void run() throws IOException {
-        final Channel channel = channelFactory.getChannel(Configuration.HOSTNAME);
-
-        channel.queueDeclare(Configuration.QUEUE_NAME, false, false, false, null);
+        channel.queueDeclare(queueName, false, false, false, null);
         final String message = "Hello World! " + DateTime.now().toString();
-        channel.basicPublish("", Configuration.QUEUE_NAME, null, message.getBytes());
+        channel.basicPublish("", queueName, null, message.getBytes());
         System.out.println(" [x] Sent '" + message + "'");
 
         channel.close();
-        ((ChannelFactoryImpl) channelFactory).destroy();
     }
 
     public static void main(String[] args) throws IOException {
-        final Sender sender = new Sender();
+        final ApplicationContext context = new ClassPathXmlApplicationContext("hello-world.xml");
+        final Sender sender = (Sender) context.getBean("sender");
         sender.run();
+        System.exit(0);
     }
 }

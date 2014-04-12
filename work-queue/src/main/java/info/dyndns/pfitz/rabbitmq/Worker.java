@@ -4,21 +4,33 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.QueueingConsumer;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 
 public class Worker {
-    private final ChannelFactory channelFactory = new ChannelFactoryImpl();
+    @Resource
+    private Channel channel;
+    @Value("${queue.name}")
+    private String queueName;
+
+    private Integer prefetchCount = 1;
+
+    public void setPrefetchCount(Integer prefetchCount) {
+        this.prefetchCount = prefetchCount;
+    }
 
     public void run() throws IOException {
-        final Channel channel = channelFactory.getChannel(Configuration.HOSTNAME);
-        channel.queueDeclare(Configuration.QUEUE_NAME, true, false, false, null);
+        channel.queueDeclare(queueName, true, false, false, null);
         System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
 
-        channel.basicQos(Configuration.PREFETCH_COUNT);
+        channel.basicQos(prefetchCount);
 
         final QueueingConsumer consumer = new QueueingConsumer(channel);
-        channel.basicConsume(Configuration.QUEUE_NAME, false, consumer);
+        channel.basicConsume(queueName, false, consumer);
 
         try {
             while (true) {
@@ -31,8 +43,6 @@ public class Worker {
             }
         } catch (InterruptedException e) {
             System.out.println("Exiting...");
-        } finally {
-            ((ChannelFactoryImpl) channelFactory).destroy();
         }
     }
 
@@ -41,7 +51,8 @@ public class Worker {
     }
 
     public static void main(String[] args) throws IOException {
-        final Worker worker = new Worker();
+        final ApplicationContext context = new ClassPathXmlApplicationContext("work-queue.xml");
+        final Worker worker = (Worker) context.getBean("worker");
         worker.run();
     }
 }
