@@ -1,6 +1,7 @@
 package info.dyndns.pfitz.rabbitmq.pubsub;
 
 import com.rabbitmq.client.Channel;
+import info.dyndns.pfitz.rabbitmq.Constants;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.DisposableBean;
@@ -24,7 +25,7 @@ public class LogEmitter implements InitializingBean, DisposableBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        channel.exchangeDeclare(exchangeName, "fanout");
+        channel.exchangeDeclare(exchangeName, Constants.EXCHANGE_FANOUT);
     }
 
     @Override

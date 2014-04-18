@@ -2,6 +2,7 @@ package info.dyndns.pfitz.rabbitmq.routing;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.QueueingConsumer;
+import info.dyndns.pfitz.rabbitmq.Constants;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,7 +29,7 @@ public class ConsoleLogger implements InitializingBean, DisposableBean, Runnable
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        channel.exchangeDeclare(exchangeName, "direct");
+        channel.exchangeDeclare(exchangeName, Constants.EXCHANGE_DIRECT);
         queueName = channel.queueDeclare().getQueue();
         for (final Severity level : levels) {
             channel.queueBind(queueName, exchangeName, level.name());

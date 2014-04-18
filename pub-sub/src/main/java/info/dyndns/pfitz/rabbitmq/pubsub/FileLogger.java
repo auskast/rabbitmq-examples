@@ -2,6 +2,7 @@ package info.dyndns.pfitz.rabbitmq.pubsub;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.QueueingConsumer;
+import info.dyndns.pfitz.rabbitmq.Constants;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,7 +26,7 @@ public class FileLogger implements InitializingBean, DisposableBean, Runnable {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        channel.exchangeDeclare(exchangeName, "fanout");
+        channel.exchangeDeclare(exchangeName, Constants.EXCHANGE_FANOUT);
         queueName = channel.queueDeclare().getQueue();
         channel.queueBind(queueName, exchangeName, "");
     }

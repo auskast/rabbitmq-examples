@@ -1,6 +1,7 @@
 package info.dyndns.pfitz.rabbitmq.routing;
 
 import com.rabbitmq.client.Channel;
+import info.dyndns.pfitz.rabbitmq.Constants;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.DisposableBean;
@@ -24,7 +25,7 @@ public class LogEmitter implements InitializingBean, DisposableBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        channel.exchangeDeclare(exchangeName, "direct");
+        channel.exchangeDeclare(exchangeName, Constants.EXCHANGE_DIRECT);
     }
 
     @Override
