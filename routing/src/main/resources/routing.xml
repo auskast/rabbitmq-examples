@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:utils="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <import resource="rabbitmq-common.xml"/>
+
+    <context:property-placeholder location="routing.properties"/>
+
+    <bean id="logEmitter" class="info.dyndns.pfitz.rabbitmq.routing.LogEmitter" lazy-init="true"/>
+    <bean id="errorLogger" class="info.dyndns.pfitz.rabbitmq.routing.ConsoleLogger" lazy-init="true">
+        <property name="levels">
+            <utils:set value-type="info.dyndns.pfitz.rabbitmq.routing.Severity">
+                <value>error</value>
+            </utils:set>
+        </property>
+    </bean>
+    <bean id="allLogger" class="info.dyndns.pfitz.rabbitmq.routing.ConsoleLogger" lazy-init="true">
+        <property name="levels">
+            <utils:set value-type="info.dyndns.pfitz.rabbitmq.routing.Severity">
+                <value>info</value>
+                <value>warn</value>
+                <value>error</value>
+            </utils:set>
+        </property>
+    </bean>
+
+</beans>
