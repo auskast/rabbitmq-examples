@@ -11,5 +11,6 @@
 
     <bean id="logEmitter" class="info.dyndns.pfitz.rabbitmq.pubsub.LogEmitter" lazy-init="true"/>
     <bean id="consoleLogger" class="info.dyndns.pfitz.rabbitmq.pubsub.ConsoleLogger" lazy-init="true"/>
+    <bean id="fileLogger" class="info.dyndns.pfitz.rabbitmq.pubsub.FileLogger" lazy-init="true"/>
 
 </beans>
