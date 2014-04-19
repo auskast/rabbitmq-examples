@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <import resource="rabbitmq-common.xml"/>
+
+    <context:property-placeholder location="topic.properties"/>
+
+    <bean id="logEmitter" class="info.dyndns.pfitz.rabbitmq.topic.LogEmitter" lazy-init="true"/>
+    <bean id="errorLogger" class="info.dyndns.pfitz.rabbitmq.topic.ConsoleLogger" lazy-init="true">
+        <property name="bindings">
+            <util:set value-type="info.dyndns.pfitz.rabbitmq.topic.Binding">
+                <bean class="info.dyndns.pfitz.rabbitmq.topic.Binding">
+                    <constructor-arg name="facility">
+                        <null/>
+                    </constructor-arg>
+                    <constructor-arg name="severity" value="error"/>
+                </bean>
+            </util:set>
+        </property>
+    </bean>
+    <bean id="cronLogger" class="info.dyndns.pfitz.rabbitmq.topic.ConsoleLogger" lazy-init="true">
+        <property name="bindings">
+            <util:set value-type="info.dyndns.pfitz.rabbitmq.topic.Binding">
+                <bean class="info.dyndns.pfitz.rabbitmq.topic.Binding">
+                    <constructor-arg name="facility" value="cron"/>
+                    <constructor-arg name="severity">
+                        <null/>
+                    </constructor-arg>
+                </bean>
+            </util:set>
+        </property>
+    </bean>
+    <bean id="cronRabbitLogger" class="info.dyndns.pfitz.rabbitmq.topic.ConsoleLogger" lazy-init="true">
+        <property name="bindings">
+            <util:set value-type="info.dyndns.pfitz.rabbitmq.topic.Binding">
+                <bean class="info.dyndns.pfitz.rabbitmq.topic.Binding">
+                    <constructor-arg value="cron"/>
+                    <constructor-arg value="info"/>
+                </bean>
+                <bean class="info.dyndns.pfitz.rabbitmq.topic.Binding">
+                    <constructor-arg value="cron"/>
+                    <constructor-arg value="warn"/>
+                </bean>
+                <bean class="info.dyndns.pfitz.rabbitmq.topic.Binding">
+                    <constructor-arg value="rabbitmq"/>
+                    <constructor-arg value="info"/>
+                </bean>
+                <bean class="info.dyndns.pfitz.rabbitmq.topic.Binding">
+                    <constructor-arg value="rabbitmq"/>
+                    <constructor-arg value="warn"/>
+                </bean>
+            </util:set>
+        </property>
+    </bean>
+
+</beans>

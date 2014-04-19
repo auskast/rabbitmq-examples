@@ -15,6 +15,7 @@
         <module>rabbitmq-common</module>
         <module>pub-sub</module>
         <module>routing</module>
+        <module>topic</module>
     </modules>
 
     <properties>
