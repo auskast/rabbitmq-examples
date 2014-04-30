@@ -16,6 +16,7 @@
         <module>pub-sub</module>
         <module>routing</module>
         <module>topic</module>
+        <module>rpc</module>
     </modules>
 
     <properties>
