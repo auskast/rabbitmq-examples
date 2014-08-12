@@ -56,10 +56,8 @@ public class RPCClient implements InitializingBean, DisposableBean {
                     return Long.parseLong(new String(delivery.getBody()));
                 }
             }
-        } catch (IOException e) {
+        } catch (InterruptedException | IOException e) {
             e.printStackTrace();
-        } catch (InterruptedException e) {
-            System.err.println("Interrupted...");
         }
 
         return null;
@@ -72,19 +70,20 @@ public class RPCClient implements InitializingBean, DisposableBean {
 
         System.out.println("Enter numbers to calculate fibonacci. A single '.' quits.");
 
-        while (true) {
-            final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-            final String input = StringUtils.trim(reader.readLine());
-            if (END_STRING.equals(input)) {
-                System.exit(0);
-            }
-            try {
-                final int num = Integer.parseInt(input);
-                System.out.println(" [x] Requesting fib(" + num + ")");
-                final long response = client.calculate(num);
-                System.out.println(" [.] Got '" + response + "'");
-            } catch (NumberFormatException e) {
-                System.out.println("Please enter numbers only");
+        try (final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
+            while (true) {
+                final String input = StringUtils.trim(reader.readLine());
+                if (END_STRING.equals(input)) {
+                    System.exit(0);
+                }
+                try {
+                    final int num = Integer.parseInt(input);
+                    System.out.println(" [x] Requesting fib(" + num + ")");
+                    final long response = client.calculate(num);
+                    System.out.println(" [.] Got '" + response + "'");
+                } catch (NumberFormatException e) {
+                    System.out.println("Please enter numbers only");
+                }
             }
         }
     }

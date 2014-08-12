@@ -50,9 +50,7 @@ public class FileLogger implements InitializingBean, DisposableBean, Runnable {
                 final String message = new String(delivery.getBody());
                 writeMessage(message);
             }
-        } catch (InterruptedException e) {
-            System.err.println("Interrupted...");
-        } catch (IOException e) {
+        } catch (InterruptedException | IOException e) {
             e.printStackTrace();
         }
     }
@@ -66,12 +64,10 @@ public class FileLogger implements InitializingBean, DisposableBean, Runnable {
             }
         }
 
-        final FileOutputStream fos = new FileOutputStream(file, true);
-
-        fos.write(message.getBytes());
-        fos.write("\n".getBytes());
-
-        fos.close();
+        try (final FileOutputStream fos = new FileOutputStream(file, true)) {
+            fos.write(message.getBytes());
+            fos.write("\n".getBytes());
+        }
     }
 
     public static void main(String[] args) throws IOException {

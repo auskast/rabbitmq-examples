@@ -41,14 +41,12 @@ public class Receiver implements InitializingBean, DisposableBean, Runnable {
                 final String message = new String(delivery.getBody());
                 System.out.println(" [x] Received '" + message + "'");
             }
-        } catch (InterruptedException e){
-            System.err.println("Interrupted...");
-        } catch (IOException e) {
+        } catch (InterruptedException | IOException e){
             e.printStackTrace();
         }
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         final AbstractApplicationContext context = new ClassPathXmlApplicationContext("hello-world.xml");
         context.registerShutdownHook();
         final Receiver receiver = (Receiver) context.getBean("receiver");

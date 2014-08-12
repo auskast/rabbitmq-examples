@@ -78,13 +78,14 @@ public class LogEmitter implements InitializingBean, DisposableBean {
 
         System.out.println("Enter log messages, starting with the severity (i, w, e). A single '.' quits.");
 
-        while (true) {
-            final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-            final String message = StringUtils.trim(reader.readLine());
-            if (END_STRING.equals(message)) {
-                System.exit(0);
+        try (final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
+            while (true) {
+                final String message = StringUtils.trim(reader.readLine());
+                if (END_STRING.equals(message)) {
+                    System.exit(0);
+                }
+                logEmitter.emitLog(new LogInput(message));
             }
-            logEmitter.emitLog(new LogInput(message));
         }
     }
 }

@@ -54,9 +54,7 @@ public class Worker implements InitializingBean, DisposableBean, Runnable {
                 System.out.println(" [x] " + DateTime.now().toString() + " Done");
                 channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
             }
-        } catch (InterruptedException e) {
-            System.err.println("Interrupted...");
-        } catch (IOException e) {
+        } catch (InterruptedException | IOException e) {
             e.printStackTrace();
         }
     }

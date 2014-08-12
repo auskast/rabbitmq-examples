@@ -57,9 +57,7 @@ public class ConsoleLogger implements InitializingBean, DisposableBean, Runnable
                 final String routingKey = delivery.getEnvelope().getRoutingKey();
                 System.out.println(" [x] Received '" + routingKey + "':'" + message + "'");
             }
-        } catch (InterruptedException e) {
-            System.err.println("Interrupted...");
-        } catch (IOException e) {
+        } catch (InterruptedException | IOException e) {
             e.printStackTrace();
         }
     }
